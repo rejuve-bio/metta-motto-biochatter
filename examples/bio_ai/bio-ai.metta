@@ -1,5 +1,5 @@
 !(import! &self motto)
-!(bind! &bioaiagent (Agent bio_ai/bio_ai_agent.msa))
+!(bind! &bioaiagent (Agent bio_ai_agent.msa))
 ;!(llm &bioaiagent (user "Find the transcripts of gene ENSG00000206014"))
 ;!(llm &bioaiagent (user "Get properties of gene ENSG00000279139"))
 ;!(llm &bioaiagent (user "What are the proteins that gene ENSG00000133710 codes for"))
