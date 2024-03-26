@@ -104,7 +104,7 @@ def get_llm_args(metta: MeTTa, prompt_space: SpaceRef, *args):
         messages += m
         functions += f
         msg_atoms += [a]
-
+    # print(args)
     for atom in args:
         # We first interpret the atom argument in the context of the main metta space.
         # If the prompt template is in a separate file and contains some external 
@@ -198,7 +198,9 @@ def llm(metta: MeTTa, *args):
         (agent, params) = agent
     if isinstance(agent, str):
         # NOTE: We could pass metta here, but it is of no use atm
+        # print("yes it is string")
         agent = MettaAgent(agent)
+        print("this is metta agent", agent)
     if not isinstance(agent, Agent):
         raise TypeError(f"Agent {agent} should be of Agent type. Got {type(agent)}")
     if not isinstance(agent, MettaAgent):
@@ -216,6 +218,7 @@ def llm(metta: MeTTa, *args):
         fname = response.function_call.name
         fs = S(fname)
         args = response.function_call.arguments
+        # print(fname, fs, args)
         args = {} if args is None else \
             json.loads(args) if isinstance(args, str) else args
         # Here, we check if the arguments should be parsed to MeTTa
