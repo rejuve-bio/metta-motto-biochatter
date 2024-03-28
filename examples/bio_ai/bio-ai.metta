@@ -1,4 +1,5 @@
 !(import! &self motto)
+!(import! &self biochatter-metta)
 !(bind! &bioaiagent (Agent bio_ai_agent.msa))
 ;!(llm &bioaiagent (user "Find the transcripts of gene ENSG00000206014"))
 ;!(llm &bioaiagent (user "Get properties of gene ENSG00000279139"))
