@@ -1,4 +1,5 @@
 import os
+from hyperon import *
 from hyperon.ext import register_atoms
 from .llm_connect import GptConversation
 from .prompts import BioCypherPromptEngine
@@ -31,7 +32,7 @@ def biochatter_metta_query(user_question):
 
     # user_question = "What variants have eqtl association with gene HBM"
     # user_question = "What variants have eqtl association with gene ENSG00000206177"
-
+    print("inside biochatter metta")
     metta_query = prompt_engine.generate_query(user_question)
     metta_query = f"!(match &self \n {metta_query} \n)"
     print("\nMeTTa Query:\n\n", metta_query)
