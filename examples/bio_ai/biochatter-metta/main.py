@@ -1,7 +1,7 @@
 import os
 from hyperon.ext import register_atoms
-from biochatter.llm_connect import GptConversation
-from biochatter.prompts import BioCypherPromptEngine
+from .llm_connect import GptConversation
+from .prompts import BioCypherPromptEngine
 
 
 def biochatter_metta_query(user_question):
