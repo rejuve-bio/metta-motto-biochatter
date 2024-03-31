@@ -212,6 +212,7 @@ def llm(metta: MeTTa, *args):
     try:
         response = agent(msgs_atom if isinstance(agent, MettaAgent) else messages,
                         functions, **params)
+        # print(response)
     except Exception as e:
         logger.error(e)
         raise e
@@ -230,6 +231,7 @@ def llm(metta: MeTTa, *args):
                 if func["parameters"]["properties"][k]['metta-type'] == 'Atom':
                     args[k] = metta.parse_single(v)
         return [E(fs, to_nested_expr(list(args.values())), msgs_atom)]
+    print(f'this is {agent} type: {type(response.content)}')
     return response.content if isinstance(agent, MettaAgent) else \
            [ValueAtom(response.content)]
 
