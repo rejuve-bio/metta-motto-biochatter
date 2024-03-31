@@ -3,6 +3,7 @@ from hyperon.ext import register_atoms
 from .agents import *
 import json
 from .utils import *
+from .agents.biochatter.biochatter import biochatter_metta
 
 import logging
 logger = logging.getLogger(__name__)
@@ -238,6 +239,7 @@ def llmgate_atoms(metta):
     global __default_agent
     __default_agent = ChatGPTAgent()
     llmAtom = OperationAtom('llm', lambda *args: llm(metta, *args), unwrap=False)
+    biochatterAtom = OperationAtom('biochatter', lambda *args: biochatter_metta(metta, *args), unwrap=False)
     # Just a helper function if one needs to print from a metta-script
     # the message converted from expression to text
     msgAtom = OperationAtom('atom2msg',
@@ -254,6 +256,7 @@ def llmgate_atoms(metta):
     concatStrAtom = OperationAtom('concat-str', lambda a, b: [ValueAtom(concat_str(a, b))], unwrap=False)
     return {
         r"llm": llmAtom,
+        r"biochatter": biochatterAtom,
         r"atom2msg": msgAtom,
         r"chat-gpt": chatGPTAtom,
         r"anthropic-agent": OperationAtom('anthropic-agent', AnthropicAgent),
