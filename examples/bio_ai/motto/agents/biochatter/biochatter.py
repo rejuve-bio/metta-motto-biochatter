@@ -3,16 +3,18 @@ from hyperon import *
 from hyperon.ext import register_atoms
 from .llm_connect import GptConversation
 from .prompts import BioCypherPromptEngine
-import os
+from pathlib import Path
 
 def biochatter_metta(metta: MeTTa, *args):
 
     for atom in args:
         user_question = str(atom) 
+    
+    pwd = Path(__file__).parent
 
     prompt_engine = BioCypherPromptEngine(
                         model_name="gpt-3.5-turbo",
-                        schema_config_or_info_path="/home/user/metta-motto/examples/bio_ai/motto/agents/biochatter/biocypher_config/schema_config.yaml",
+                        schema_config_or_info_path=f"{pwd}/biocypher_config/schema_config.yaml",
                     )
     """ Gene Ontology Atomspace queries: """
     # print(user_question)

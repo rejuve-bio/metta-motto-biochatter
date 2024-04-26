@@ -34,3 +34,35 @@ The unit tests can be executed via
 cd tests
 pytest
 ```
+
+## Biochatter with Metta-Motto setup
+
+Navigate to the bio_ai folder
+
+```bash
+cd examples/bio_ai
+```
+
+Install required dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+set Openai Api Key
+
+```bash
+export OPENAI_API_KEY=<YOUR OPENAI API KEY>
+```
+
+## Running Bio_ai examples
+
+Select the questions to run from the 'bio-ai.metta' file by uncomenting them. Then, run the below command
+
+```bash
+metta bio_ai.metta
+```
+
+## Note
+
+The recommended environment for running this repository is the Docker environment within the hyperon-experimental repository.
