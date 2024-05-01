@@ -48,7 +48,158 @@ class MettaPrompt:
     
         metta_edge_sample += "### \n"
         return metta_edge_sample
+
     
+    def generate_transcripts_edge_query_samples(self):
+        transcripts_edge_query_samples = self.generate_metta_edge_query_samples()
+        
+        transcripts_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on transcripts \n\
+        ;Find the transcripts of gene <some_gene_id_value> \n\
+            (transcribed_to (gene <some_gene_id_value>) $transcript) \n\
+            ($transcript) \n\
+            \n;Find the transcripts of gene <some_gene_name_value> (use the gene HGNC symbol instead of ensembl id) \n\
+            (, \n\
+                (gene_name (gene $ens) <some_gene_name_value>) \n\
+                (transcribed_to (gene $ens) $transcript) \n\
+            )\n\
+            $transcript \n"
+
+        return transcripts_edge_query_samples
+
+    def generate_pathway_edge_query_samples(self):
+        pathway_edge_query_samples = self.generate_metta_edge_query_samples()
+        pathway_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on pathways \n\
+        ;Find pathways that gene <some_gene_id_value> is a subset of \n\
+        (genes_pathways (gene <some_gene_id_value>) $p) \n\
+            $p\n\
+        \n ;Find pathways that gene <some_gene_name_value> is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+                (gene_name (gene $ens) <some_gene_name_value>) \n\
+                (genes_pathways (gene $ens) $p) \n\
+        )
+        $p \n\
+        \n ;Find parent pathways of the pathways that gene <some_gene_name_value> is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) <some_gene_name_value>) \n\
+            (genes_pathways (gene $ens) $p1) \n\
+            (parent_pathway_of $p2 $p1) \n\
+        ) \n\
+        $p2 \n\
+        \n ;Find parent pathways of the pathways that gene <some_gene_name_value> is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) <some_gene_name_value>) \n\
+            (genes_pathways (gene $ens) $p1) \n\
+            (parent_pathway_of $p2 $p1) \n\
+        ) \n\
+        $p2 \n\
+        "
+        return pathway_edge_query_samples
+
+    def generate_gene_ontology_edge_query_samples(self):
+        gene_ontology_edge_query_samples = self.generate_metta_edge_query_samples()
+        gene_ontology_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on pathways \n\
+        ;Find the Gene Ontology (GO) categories associated with protein <some_protein_id_value> \n\
+        ( \n\
+            go_gene_product $ontology (protein <some_protein_id_value>) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find the  Gene Ontology (GO) categories associated with gene <some_gene_id_value> \n\
+        (, \n\
+            (transcribed_to (gene <some_gene_id_value>) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find the Gene Ontology (GO) categories associated with gene <some_gene_name_value> (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) FLRT2) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+        ) \n\
+        $ontology \n\
+        ) \n\
+        \n ;Find biological process GO categories associated with gene <some_gene_name_value> \n\
+            (, \n\
+                (transcribed_to (gene <some_gene_name_value>) $transcript) \n\
+                (translates_to $transcript $protein) \n\
+                (go_gene_product $ontology $protein) \n\
+                (subontology $ontology biological_process) \n\
+            ) \n\
+            $ontology \n\
+        ) \n\
+        \n ;Find biological process Gene Ontology (GO) categories associated with gene <some_gene_name_value> (use the gene HGNC symbol instead of ensembl id)
+            (, \n\
+                (gene_name (gene $ens) <some_gene_name_value>) \n\
+                (transcribed_to (gene $ens) $transcript) \n\
+                (translates_to $transcript $protein) \n\
+                (go_gene_product $ontology $protein) \n\
+                (subontology $ontology biological_process) \n\
+            ) \n\
+            $ontology \n\
+        ) \n\
+        \n ;Find molecular function Gene Ontology (GO) categories associated with gene <some_gene_id_value> \n\
+        (, \n\
+            (transcribed_to (gene <some_gene_name_value>) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology molecular_function) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find molecular function Gene Ontology (GO) categories associated with gene <some_gene_id_value> (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) <some_gene_id_value>) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology molecular_function) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find cellular component Gene Ontology (GO) categories associated with gene <some_gene_name_value> (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) <some_gene_name_value>) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology cellular_component) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find cellular component Gene Ontology (GO) categories associated with gene <some_gene_id_value> \n\
+        (, \n\
+            (transcribed_to (gene <some_gene_id_value>) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology cellular_component) \n\
+        ) \n\
+        $ontology \n\
+        "
+        return gene_ontology_edge_query_samples
+    
+    def generate_variant_edge_query_samples(self):
+        variant_edge_query_samples = self.generate_metta_edge_query_samples()
+        variant_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on variants \n\
+        \n ;What variants have eqtl association with gene <some_gene_name_value> (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) <some_gene_name_value>) \n\
+            (eqtl $seq (gene $ens)) \n\
+        ) \n\
+        $seq \n\
+        \n ;What variants have eqtl association with gene <some_gene_id_value> and return the properties of the association \n\
+        (, \n\
+            (eqtl $seq (gene <some_gene_id_value>)) \n\
+            ($prop (eqtl $seq (gene <some_gene_id_value>)) $val) \n\
+        ) \n\
+            ($prop (eqtl $seq (gene <some_gene_id_value>)) $val) \n\
+        \n ;What variants have eqtl association with gene <some_gene_name_value> (use the gene HGNC symbol instead of ensembl id) and return the properties of the association \n\
+        (, \n\
+            (gene_name $ens <some_gene_name_value>) \n\
+            (eqtl $seq $ens) \n\
+            ($prop (eqtl $seq $ens) $val) \n\
+        ) \n\
+        ($prop (eqtl $seq $ens) $val) \n\
+        \n 
+        "
+
     def generate_metta_node_query_samples(self):
         if not self.schema_nodes:
             return ''
