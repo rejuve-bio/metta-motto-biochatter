@@ -4,8 +4,8 @@ class MettaPrompt:
         self.schema_nodes = schema_nodes
         self.schema_edges = schema_edges
 
-        print("this is schema nodes dict: ", schema_nodes)
-        print("this is schema edges dict: ", schema_edges)
+        # print("this is schema nodes dict: ", schema_nodes)
+        # print("this is schema edges dict: ", schema_edges)
 
     def generate_metta_node_samples(self) -> str:
         if not self.schema_nodes:
@@ -123,10 +123,9 @@ class MettaPrompt:
             (gene_name (gene $ens) <some_gene_name_value>) \n\
             (transcribed_to (gene $ens) $transcript) \n\
         )\n\
-        $transcript \n\
-        *** \n"
+        $transcript \n"
 
-
+        transcripts_edge_query_samples += "*** \n"
         return transcripts_edge_query_samples
 
     def generate_pathway_edge_query_samples(self):
@@ -154,9 +153,8 @@ class MettaPrompt:
             (genes_pathways (gene $ens) $p1) \n\
             (parent_pathway_of $p2 $p1) \n\
         ) \n\
-        $p2 \n\
-        *** \n"
-        
+        $p2 \n"
+        pathway_edge_query_samples += "*** \n"
         return pathway_edge_query_samples
 
     def generate_gene_ontology_edge_query_samples(self):
@@ -245,13 +243,13 @@ class MettaPrompt:
         \n\
         \n ;What type of evidence supports the association between the protein identified as <some_protein_id_value> and the Gene Ontology term <some_gene_ontology_term_id_value>? \n\
          (evidence (go_gene_product (ontology_term <some_gene_ontology_term_id_value>) (protein <some_protein_id_value>)) $val) \n\
-         $val \n\
-        *** \n"
+         $val \n"
+        gene_ontology_edge_query_samples += "*** \n"
         return gene_ontology_edge_query_samples
     
     def generate_sequence_variant_edge_query_samples(self):
-        variant_edge_query_samples = self.generate_metta_edge_query_samples()
-        variant_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on variants \n***\n\
+        # variant_edge_query_samples = self.generate_metta_edge_query_samples()
+        variant_edge_query_samples = f"\n Below are some examples of questions and their corresponding query on variants \n***\n\
         \n ;What variants have eqtl association with gene <some_gene_name_value> (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
             (gene_name (gene $ens) <some_gene_name_value>) \n\
@@ -266,11 +264,11 @@ class MettaPrompt:
             ($prop (eqtl $seq (gene <some_gene_id_value>)) $val) \n\
         \n ;What variants have eqtl association with gene <some_gene_name_value> (use the gene HGNC symbol instead of ensembl id) and return the properties of the association \n\
         (, \n\
-            (gene_name $ens <some_gene_name_value>) \n\
+            (gene_name (gene $ens) <some_gene_name_value>) \n\
             (eqtl $seq $ens) \n\
-            ($prop (eqtl $seq $ens) $val) \n\
+            ($prop (eqtl $seq (gene $ens)) $val) \n\
         ) \n\
-        ($prop (eqtl $seq $ens) $val) \n\
+        ($prop (eqtl $seq (gene $ens)) $val) \n\
         \n  ;Provide the properties of the eqtl association involving the <some_sequence_variant_id> variant and the gene <some_gene_id_value> \n\
         (, \n\
             ($prop (eqtl  (sequence_variant <some_sequence_variant_id>) (gene <some_gene_id_value>)) $val) \n\
@@ -291,9 +289,8 @@ class MettaPrompt:
             (eqtl (sequence_variant <some_sequence_variant_id>)  $ens) \n\
             ($prop (eqtl (sequence_variant <some_sequence_variant_id>) $ens) $val) \n\
         ) \n\
-        ($prop (eqtl (sequence_variant <some_sequence_variant_id>) $ens) $val) \n\
-        *** \n"
-        
+        ($prop (eqtl (sequence_variant <some_sequence_variant_id>) $ens) $val) \n"
+        variant_edge_query_samples += "*** \n"
         return variant_edge_query_samples
 
     def generate_protein_edge_query_samples(self):
@@ -311,9 +308,8 @@ class MettaPrompt:
                 (transcribed_to (gene $ens) $transcript) \n\
                 (translates_to $transcript $protein) \n\
             ) \n\
-            $protein \n\
-        *** \n"
-        
+            $protein \n"
+        protein_edge_query_samples += "*** \n"
         return protein_edge_query_samples
 
 
@@ -322,19 +318,25 @@ class MettaPrompt:
         metta_node_samples = self.generate_metta_node_samples()
         metta_edge_samples = self.generate_metta_edge_samples()
 
-        node_keys = self.schema_nodes.keys()   
+        node_keys = self.schema_nodes.keys()
+        print(node_keys)   
 
         metta_node_query_samples = self.generate_metta_node_query_samples()
-        if all(node in node_keys for node in ["gene", "protein"]):
+        if "protein" in node_keys:
             metta_edge_query_samples = self.generate_protein_edge_query_samples()
-        elif all(node in node_keys for node in ["gene", "transcript"]):
+            print("running from inside protein")
+        elif "transcript" in node_keys:
             metta_edge_query_samples = self.generate_transcripts_edge_query_samples()
-        elif all(node in node_keys for node in ["gene", "ontology_term"]):
+            print("running from inside transcript")
+        elif "ontology_term" in node_keys:
             metta_edge_query_samples = self.generate_gene_ontology_edge_query_samples()
-        elif all(node in node_keys for node in ["gene", "pathway"]):
+            print("running from inside ontology term")
+        elif "pathway" in node_keys:
             metta_edge_query_samples = self.generate_pathway_edge_query_samples()
-        elif all(node in node_keys for node in ["gene", "sequence_variant"]):
+            print("running from inside pathway")
+        elif "sequence_variant" in node_keys:
             metta_edge_query_samples = self.generate_sequence_variant_edge_query_samples()
+            print("running from inside sequence variant")
         else:
             metta_edge_query_samples = self.generate_metta_edge_query_samples()
 
@@ -353,7 +355,8 @@ class MettaPrompt:
             f"{metta_node_query_samples}\n"
             f"{metta_edge_query_samples}\n"
             
-
+            f"<some_gene_name_value> is a gene name like 'HBM', 'FLRT2' and <some_gene_id_value> is an ensembl id like 'ENSG00000170540', 'ENSG00000161980'. A gene has two of them and which one to use will be mentioned in the user's question."
+            f"For example, 'gene <some_gene_id_value>' can be like 'gene ENSG00000170540', 'gene <some_gene_name_value>' can be like 'gene FLRT2' and for sequence varaint, 'sequence_variant <some_sequence_variant_id>' can be like 'sequence_variant rs2239739'."
             f"Example queries that are given above contain both complex and simple queries. Examples that start with ',' are complex queries those that don't contains ',' are simple queries."
             f"Complex queries propagate variable values through expression from the top to the bottom. for example let's look at the below complex query\n\
                   (,\n\
@@ -397,4 +400,5 @@ class MettaPrompt:
             f"Return only query,  no explanation and other texts"
             f"Based on the information given to you above, you will write a pattern matching query on the dataset for the user's question."
         )
+        print(prompt)
         return prompt
