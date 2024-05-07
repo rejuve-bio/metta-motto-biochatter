@@ -142,9 +142,9 @@ class MettaPrompt:
     def generate_pathway_edge_query_samples(self):
         pathway_edge_query_samples = self.generate_metta_edge_query_samples()
         pathway_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on pathways \n***\n\
-        ;Find pathways that gene <some_gene_ensembl_id> is a subset of \n\
+        \n ;Find pathways that gene <some_gene_ensembl_id> is a subset of \n\
         (genes_pathways (gene <some_gene_ensembl_id>) $p) \n\
-            $p\n\
+        $p\n\
         \n ;Find pathways that gene <some_gene_HGNC_symbol> is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
                 (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
@@ -354,19 +354,19 @@ class MettaPrompt:
         metta_node_query_samples = self.generate_metta_node_query_samples()
         if "protein" in node_keys:
             metta_edge_query_samples = self.generate_protein_edge_query_samples()
-            print("running from inside protein")
+            # print("running from inside protein")
         elif "transcript" in node_keys:
             metta_edge_query_samples = self.generate_transcripts_edge_query_samples()
-            print("running from inside transcript")
+            # print("running from inside transcript")
         elif "ontology_term" in node_keys:
             metta_edge_query_samples = self.generate_gene_ontology_edge_query_samples()
-            print("running from inside ontology term")
+            # print("running from inside ontology term")
         elif "pathway" in node_keys:
             metta_edge_query_samples = self.generate_pathway_edge_query_samples()
-            print("running from inside pathway")
+            # print("running from inside pathway")
         elif "sequence_variant" in node_keys:
             metta_edge_query_samples = self.generate_sequence_variant_edge_query_samples()
-            print("running from inside sequence variant")
+            # print("running from inside sequence variant")
         else:
             metta_edge_query_samples = self.generate_metta_edge_query_samples()
 
@@ -446,5 +446,5 @@ class MettaPrompt:
             f"Return only query,  no explanation and other texts"
             f"Based on the information given to you above, you will write a pattern matching query on the dataset for the user's question."
         )
-        print(prompt)
+        # print(prompt)
         return prompt
