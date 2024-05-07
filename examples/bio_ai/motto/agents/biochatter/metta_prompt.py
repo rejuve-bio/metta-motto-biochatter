@@ -59,6 +59,7 @@ class MettaPrompt:
         node_query_samples = "\nThe following are sample queries for the nodes in the dataset: \n***\n"
 
         for node_label, properties in self.schema_nodes.items():
+            print(node_label)
             node_query_samples += f"\n; Get properties of a '{node_label}' with some id <{node_label}_id>: \n\
                                         ($prop ({node_label} <{node_label}_id>) $val)\n\
                                         ($prop $val)\n"
@@ -78,7 +79,17 @@ class MettaPrompt:
                                              ($prop ({node_label} $id) $val)\n\
                                             )\n\
                                             ($prop $val)\n"
-    
+            if node_label == "gene":
+                node_query_samples += f"\n Below are some examples of questions and their corresponding queries on gene. \n***\n\
+                \n ;Get properties of gene <some_gene_ensembl_id> \n\
+                ($prop (gene <some_gene_ensembl_id>) $val) \n\
+                ($prop $val) \n\
+                \n ;Get properties of gene <some_gene_HGNC_symbol> (use the gene HGNC symbol instead of ensembl id) \n\
+                    (, \n\
+                        (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+                        ($prop (gene $ens) $val) \n\
+                    ) \n\
+                    ($prop $val) \n"
         node_query_samples += "*** \n"
         return node_query_samples
 
@@ -140,10 +151,9 @@ class MettaPrompt:
                 (genes_pathways (gene $ens) $p) \n\
         )\n\
         $p \n\
-        \n ;Find parent pathways of the pathways that gene <some_gene_HGNC_symbol> is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        \n ;Find parent pathways of the pathways that gene <some_gene_ensembl_id> is a subset of.\n\
         (, \n\
-            (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
-            (genes_pathways (gene $ens) $p1) \n\
+            (genes_pathways (gene <some_gene_ensembl_id>) $p1) \n\
             (parent_pathway_of $p2 $p1) \n\
         ) \n\
         $p2 \n\
@@ -160,6 +170,11 @@ class MettaPrompt:
     def generate_gene_ontology_edge_query_samples(self):
         gene_ontology_edge_query_samples = self.generate_metta_edge_query_samples()
         gene_ontology_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on pathways \n***\n\
+        \n ;Find the Gene Ontology (GO) categories associated with protein <some_protein_id> \n\
+        ( \n\
+            go_gene_product $ontology (protein <some_protein_id>) \n\
+        ) \n\
+        $ontology \n\
         \n ;Find the Gene Ontology (GO) categories associated with protein <some_protein_id> \n\
         ( \n\
             go_gene_product $ontology (protein <some_protein_id>) \n\
@@ -303,6 +318,11 @@ class MettaPrompt:
     def generate_protein_edge_query_samples(self):
         protein_edge_query_samples = self.generate_metta_edge_query_samples()
         protein_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on proteins \n***\n\
+        \n ;Find the Gene Ontology (GO) categories associated with protein <some_protein_id> \n\
+        ( \n\
+            go_gene_product $ontology (protein <some_protein_id>) \n\
+        ) \n\
+        $ontology \n\
         \n ;What are the proteins that gene <some_gene_ensembl_id> codes for \n\
         (, \n\
             (transcribed_to (gene <some_gene_ensembl_id>) $transcript) \n\
@@ -310,15 +330,15 @@ class MettaPrompt:
         ) \n\
         $protein \n\
         \n ;What are the proteins that gene <some_gene_HGNC_symbol> codes for (use the gene HGNC symbol instead of ensembl id)\n\
-            (, \n\
-                (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
-                (transcribed_to (gene $ens) $transcript) \n\
-                (translates_to $transcript $protein) \n\
-            ) \n\
-            $protein \n\
+        (, \n\
+            (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+        ) \n\
+        $protein \n\
         \n ;What type of evidence supports the association between the protein identified as <some_protein_id> and the Gene Ontology term <some_gene_ontology_term_id>? \n\
-            (evidence (go_gene_product (ontology_term <some_gene_ontology_term_id>) (protein <some_protein_id>)) $val) \n\
-            $val \n"
+        (evidence (go_gene_product (ontology_term <some_gene_ontology_term_id>) (protein <some_protein_id>)) $val) \n\
+        $val \n"
         protein_edge_query_samples += "*** \n"
         return protein_edge_query_samples
 
@@ -367,26 +387,41 @@ class MettaPrompt:
             
             f"<some_gene_HGNC_symbol> is a gene name like 'HBM', 'FLRT2' and <some_gene_ensembl_id> is an ensembl id like 'ENSG00000170540', 'ENSG00000161980'. A gene has two of them and which one to use will be mentioned in the user's question."
             f"For example, 'gene <some_gene_ensembl_id>' can be like 'gene ENSG00000170540', 'gene <some_gene_HGNC_symbol>' can be like 'gene FLRT2' and for sequence varaint, 'sequence_variant <some_sequence_variant_id>' can be like 'sequence_variant rs2239739'."
-            f"If the ensembl id(like 'ENSG00000170540') is given in the user's question, don't write something like '(gene ENSG00000186790 $ens)' or '(gene_name (gene $ens) ENSG00000186790)'  . Instead, just use the ensemble id in the subsequent statements."
+            f"If the ensembl id(like 'ENSG00000170540') is given in the user's question, don't write something like '(gene ENSG00000186790 $ens)' or '(gene_name (gene $ens) ENSG00000186790)'. Instead, just use the ensemble id in the subsequent statements."
+            f"Let me give you two examples that show where you need to write '(gene_name (gene $ens) <some_gene_HGNC_symbol>)'. If the user's question contains an HGNC symbol, you have to first retrieve the Ensembl ID. Below is an example that demonstrates that:\
+            \n ;What are the proteins that gene <some_gene_HGNC_symbol> codes for (use the gene HGNC symbol instead of ensembl id)\n\
+            (, \n\
+                (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+                (transcribed_to (gene $ens) $transcript) \n\
+                (translates_to $transcript $protein) \n\
+            ) \n\
+            In the above example, since the user's question describes a gene with the gene's HGNC symbol (examples of HGNC symbols are 'HBM', 'FLRT2'), the gene's Ensembl ID needs to be retrieved first. '(gene_name (gene $ens) <some_gene_HGNC_symbol>)' retrieves the gene's Ensembl ID. \n\
+            In another case, let's consider the example below: \n\
+            \n ;What are the proteins that gene <some_gene_ensembl_id> codes for\n\
+            (, \n\
+                (transcribed_to (gene <some_gene_ensembl_id>) $transcript) \n\
+                (translates_to $transcript $protein) \n\
+            )\
+            Since the user's question described the gene with the gene's Ensembl ID, there is no need to retrieve the Ensembl ID as it is already given in the user's question. The Ensembl ID is directly used in the subsequent statement. In addition, whether to use HGNC symbol or Ensembl ID will be stated in the user's question."
             f"Example queries that are given above contain both complex and simple queries. Examples that start with ',' are complex queries those that don't contains ',' are simple queries."
             f"Complex queries propagate variable values through expression from the top to the bottom. for example let's look at the below complex query\n\
-                  (,\n\
+                (,\n\
                         (gene_name (gene $ens) <some_gene_HGNC_symbol>)\n\
                         (transcribed_to (gene $ens) $transcript)\n\
                         (translates_to $transcript $protein)\n\
                         (go_gene_product $ontology $protein)\n\
                         (subontology $ontology <some_subontology_val>)\n\
-                    )\n\
-                    ($ontology)\n\
+                )\n\
+                ($ontology)\n\
             from '(gene_name (gene $ens) <some_gene_HGNC_symbol>)' expression, the value $ens will be retrived and will be passed to '(transcribed_to (gene $ens) $transcript)'.\
             The same way, from '(transcribed_to (gene $ens) $transcript)' the value of $transcript will be retrived and will be passed to '(translates_to $transcript $protein)'.\
             Again, from '(translates_to $transcript $protein)' $protien will be retrieved and will be passed to '(go_gene_product $ontology $protein)'.\
             Finally, from '(go_gene_product $ontology $protein)', $ontology will be retrieved and will be passed to '(subontology $ontology <some_subontology_val>)'. At the end value of $ ontology will be returned."
             f"Simple queries just pattern match a single experession and then return the result. Let's look at one example\n\
                 (\n\
-                        go_gene_product $ontology (protein <some_protien_name_value>)\n\
-                    )\n\
-                    ($ontology)\n\
+                    go_gene_product $ontology (protein <<some_protein_id>>)\n\
+                )\n\
+                ($ontology)\n\
             The above example just pattern match the given expression and return the value of $ontology."
             f"Everything between the three hashtags (### .... ###) is the exact format of the dataset."
             f"Everything between the three asterisks (*** .... ***) is a query."
@@ -396,13 +431,13 @@ class MettaPrompt:
                 'Give the description for the ontology term with ID 'GO:0000785''.\
             for the above user question, the below query can be generated\n\
                 (description (ontology_term GO:0000785) $val)\n\
-                 ($val)\n\
+                ($val)\n\
             let's look at other user question that requires complex query to be genrated.\
             'Find all properties of genes that belong into biological process subontology.'\n\
             (,\n\
                 (subontology (ontology_term $id) biological_process)\n\
                 ($prop (ontology_term $id) $val)\n\
-                )\n\
+            )\n\
                 ($prop $val)\n\
             "
             f"The word after the dollar sign ($) is a variable that can replace values that aren't provided by the user or\
