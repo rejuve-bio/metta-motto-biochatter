@@ -38,7 +38,7 @@ class MettaAgent(Agent):
                     if len(ch) != 2 or repr(ch[0]) != 'Response':
                         raise TypeError(f"Unexpected response format {ch}")
                     results += [ch[1]]
-            print("this is results", results)
+            # print("this is results", results)
         return Response(results, None)
 
     def __call__(self, msgs_atom, functions=[]):
@@ -68,21 +68,23 @@ class MettaAgent(Agent):
                 code = f.read()
                 response = metta.run(code)
                 mettaResponse = self._postproc(response)
-                print("this is metta response", mettaResponse)
+                print("this is metta response type", type(mettaResponse))
                 agent = ChatGPTAgent()
                 functions = []
                 params = {}
                 message = f"Below is a user's question and the answer for the user's question. So, I want you to summarizes the answer by getting a context from the user's question. \n\
                 \n User's question: {msgs_atom} \n\
                 \n response for the user's question: {mettaResponse} \n\
-                \n so now, i want you to put the summary of the answer without changing the data structure of the answer, which means put the summary of the answer on the 'content' key inside 'Response' and put 'function call' as it is. \n"
+                \n After summarizing the answer, I want you to wrap the answer with '[()]' and return it. \n"
                 messages = [{'role': 'user', 'content': str(message)}]
                 naturalLanguageResponse = agent(messages, functions, **params)
-                print("this is natural language response", naturalLanguageResponse.content) 
+                # naturalLanguageResponse = Response(naturalLanguageResponse.content)
+                # print("this is natural language response", Response(naturalLanguageResponse.content)) 
         if self._code is not None:
             response = metta.run(self._code) if isinstance(self._code, str) else \
                        [interpret(metta.space(), self._code)]
-        return naturalLanguageResponse.content
+            return self._postproc(response)
+        return self._postproc(naturalLanguageResponse.content)
 
 class DialogAgent(MettaAgent):
 
