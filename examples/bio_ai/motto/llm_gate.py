@@ -187,6 +187,7 @@ def get_llm_args(metta: MeTTa, prompt_space: SpaceRef, *args):
 def llm(metta: MeTTa, *args):
     try:
         agent, messages, functions, msgs_atom = get_llm_args(metta, None, *args)
+        print("this are messages", messages)
     except Exception as e:
         # NOTE: we put the error into the log since it can be ignored by the caller
         logger.error(e)

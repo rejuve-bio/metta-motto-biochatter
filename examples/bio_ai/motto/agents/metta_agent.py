@@ -1,5 +1,7 @@
 from .agent import Agent, Response
 from hyperon import MeTTa, Environment, ExpressionAtom, OperationAtom, E, S, interpret
+from .gpt_agent import ChatGPTAgent
+import json
 
 class MettaAgent(Agent):
 
@@ -63,10 +65,22 @@ class MettaAgent(Agent):
             with open(self._path, mode='r') as f:
                 code = f.read()
                 response = metta.run(code)
+                mettaResponse = self._postproc(response)
+                agent = ChatGPTAgent()
+                functions = []
+                params = {}
+                message = f"Below is a user's question and the answer for the user's question. So, I want you to summarizes the answer by getting a context from the user's question. \n\
+                \n User's question: {msgs_atom} \n\
+                \n response for the user's question: {mettaResponse} \n\
+                \n so now, i want you to put the summary of the answer without changing the data structure of the answer, which means put the summary of the answer on the 'content' key inside 'Response' and put 'function call' as it is. \n"
+                messages = ['role': 'user', 'content': message]
+                naturalLanguageResponse = agent(messages, functions, **params)
+                naturalLanguageResponse = json.loads(naturalLanguageResponse)
+                print("this is natural language response", naturalLanguageResponse) 
         if self._code is not None:
             response = metta.run(self._code) if isinstance(self._code, str) else \
                        [interpret(metta.space(), self._code)]
-        return self._postproc(response)
+        return naturalLanguageResponse
 
 
 class DialogAgent(MettaAgent):
