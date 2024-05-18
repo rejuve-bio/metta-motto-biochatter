@@ -27,9 +27,11 @@ class MettaAgent(Agent):
     def _postproc(self, response):
         results = []
         # Multiple responses are now returned as a list
+        print("this is response", response)
         for rs in response:
             # print("this is rs", rs)
             for r in rs:
+                # print(r)
                 if isinstance(r, ExpressionAtom):
                     ch = r.get_children()
                     if len(ch) == 0:
@@ -66,18 +68,23 @@ class MettaAgent(Agent):
             #response = metta.load_module_at_path(self._path)
             with open(self._path, mode='r') as f:
                 code = f.read()
+                # print(code)
                 response = metta.run(code)
+                # print("this is response", response)
                 mettaResponse = self._postproc(response)
-                print("this is metta response type", type(mettaResponse))
+                # print("this is metta response type", type(mettaResponse))
                 agent = ChatGPTAgent()
                 functions = []
                 params = {}
-                message = f"Below is a user's question and the answer for the user's question. So, I want you to summarizes the answer by getting a context from the user's question. \n\
+                message = f"Below is a user's question and the answer for the user's question. So, I want you to summarize the answer by getting a context from the user's question. \n\
                 \n User's question: {msgs_atom} \n\
                 \n response for the user's question: {mettaResponse} \n\
-                \n After summarizing the answer, I want you to wrap the answer with '[()]' and return it. \n"
+                \n Put the result of the summary as a list in the below format: \n\
+                \n [[(Response (<Your summary>))]] \n\
+                <Your summary> is the result of your summary. \n"
                 messages = [{'role': 'user', 'content': str(message)}]
                 naturalLanguageResponse = agent(messages, functions, **params)
+                # print(naturalLanguageResponse.content)
                 # naturalLanguageResponse = Response(naturalLanguageResponse.content)
                 # print("this is natural language response", Response(naturalLanguageResponse.content)) 
         if self._code is not None:
