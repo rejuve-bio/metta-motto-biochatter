@@ -232,7 +232,8 @@ def llm(metta: MeTTa, *args):
                 if func["parameters"]["properties"][k]['metta-type'] == 'Atom':
                     args[k] = metta.parse_single(v)
         return [E(fs, to_nested_expr(list(args.values())), msgs_atom)]
-    print(f'this is {agent} type: {type(response.content)}')
+    # print(f'this is {agent} type: {type(response.content)}')
+    # print("this is response content from llm_gate", response.content)
     return response.content if isinstance(agent, MettaAgent) else \
            [ValueAtom(response.content)]
 
