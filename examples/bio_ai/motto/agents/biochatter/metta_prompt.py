@@ -170,14 +170,34 @@ class MettaPrompt:
     def generate_gene_ontology_edge_query_samples(self):
         gene_ontology_edge_query_samples = self.generate_metta_edge_query_samples()
         gene_ontology_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on pathways \n***\n\
-        \n ;Find the Gene Ontology (GO) categories associated with protein <some_protein_id> \n\
+        \n ;Find the Gene Ontology (GO) categories associated with Protein <some_protein_id> \n\
         ( \n\
             go_gene_product $ontology (protein <some_protein_id>) \n\
         ) \n\
         $ontology \n\
-        \n ;Find the Gene Ontology (GO) categories associated with protein <some_protein_id> \n\
+        \n ;Find the Gene Ontology (GO) categories associated with Protein P78415 \n\
         ( \n\
-            go_gene_product $ontology (protein <some_protein_id>) \n\
+            go_gene_product $ontology (protein P78415) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find the Gene Ontology (GO) categories associated with Protein O43155 \n\
+        ( \n\
+            go_gene_product $ontology (protein O43155) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find the Gene Ontology (GO) categories associated with Protein A6NIX2 \n\
+        ( \n\
+            go_gene_product $ontology (protein A6NIX2) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find the Gene Ontology (GO) categories associated with Protein P09769 \n\
+        ( \n\
+            go_gene_product $ontology (protein P09769) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find the Gene Ontology (GO) categories associated with Protein Q9NQ38 \n\
+        ( \n\
+            go_gene_product $ontology (protein Q9NQ38) \n\
         ) \n\
         $ontology \n\
         \n ;Find the  Gene Ontology (GO) categories associated with gene <some_gene_ensembl_id> \n\
@@ -187,9 +207,23 @@ class MettaPrompt:
             (go_gene_product $ontology $protein) \n\
         ) \n\
         $ontology \n\
+        \n ;Find the  Gene Ontology (GO) categories associated with gene ENSG00000177508 \n\
+        (, \n\
+            (transcribed_to (gene ENSG00000177508) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+        ) \n\
+        $ontology \n\
         \n ;Find the Gene Ontology (GO) categories associated with gene <some_gene_HGNC_symbol> (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
             (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+        ) \n\
+        \n ;Find the Gene Ontology (GO) categories associated with gene FLRT2 (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) FLRT2) \n\
             (transcribed_to (gene $ens) $transcript) \n\
             (translates_to $transcript $protein) \n\
             (go_gene_product $ontology $protein) \n\
@@ -323,15 +357,37 @@ class MettaPrompt:
             go_gene_product $ontology (protein <some_protein_id>) \n\
         ) \n\
         $ontology \n\
+        \n ;Find the Gene Ontology (GO) categories associated with protein P78415 \n\
+        ( \n\
+            go_gene_product $ontology (protein P78415) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find the Gene Ontology (GO) categories associated with protein O43155 \n\
+        ( \n\
+            go_gene_product $ontology (protein O43155) \n\
+        ) \n\
+        $ontology \n\
         \n ;What are the proteins that gene <some_gene_ensembl_id> codes for \n\
         (, \n\
             (transcribed_to (gene <some_gene_ensembl_id>) $transcript) \n\
             (translates_to $transcript $protein) \n\
         ) \n\
         $protein \n\
+        \n ;What are the proteins that gene ENSG00000052795 codes for \n\
+        (, \n\
+            (transcribed_to (gene ENSG00000052795) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+        ) \n\
+        $protein \n\
         \n ;What are the proteins that gene <some_gene_HGNC_symbol> codes for (use the gene HGNC symbol instead of ensembl id)\n\
         (, \n\
             (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+        ) \n\
+        \n ;What are the proteins that gene HBA1 codes for (use the gene HGNC symbol instead of ensembl id)\n\
+        (, \n\
+            (gene_name (gene $ens) HBA1) \n\
             (transcribed_to (gene $ens) $transcript) \n\
             (translates_to $transcript $protein) \n\
         ) \n\

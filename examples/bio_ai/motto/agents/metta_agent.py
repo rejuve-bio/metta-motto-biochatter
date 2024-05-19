@@ -1,5 +1,5 @@
 from .agent import Agent, Response
-from hyperon import MeTTa, Environment, ExpressionAtom, OperationAtom, E, S, interpret
+from hyperon import MeTTa, Environment, ExpressionAtom, OperationAtom, E, S, interpret, ValueAtom
 from .gpt_agent import ChatGPTAgent
 import ast
 
@@ -83,7 +83,7 @@ class MettaAgent(Agent):
                 messages = [{'role': 'user', 'content': str(message)}]
                 naturalLanguageResponse = agent(messages, functions, **params)
                 # print(self._postproc(naturalLanguageResponse.content))
-                naturalLanguageResponse = Response(naturalLanguageResponse.content)
+                naturalLanguageResponse = Response([ValueAtom(naturalLanguageResponse.content)])
                 print(naturalLanguageResponse)
                 # print(naturalLanguageResponse.content)
                 # naturalLanguageResponse = Response(naturalLanguageResponse.content)
