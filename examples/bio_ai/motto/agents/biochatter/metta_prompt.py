@@ -4,9 +4,6 @@ class MettaPrompt:
         self.schema_nodes = schema_nodes
         self.schema_edges = schema_edges
 
-        # print("this is schema nodes dict: ", schema_nodes)
-        # print("this is schema edges dict: ", schema_edges)
-
     def generate_metta_node_samples(self) -> str:
         if not self.schema_nodes:
             return ''
@@ -518,28 +515,20 @@ class MettaPrompt:
         metta_edge_samples = self.generate_metta_edge_samples()
 
         node_keys = self.schema_nodes.keys()
-        print(node_keys)   
 
         metta_node_query_samples = self.generate_metta_node_query_samples()
         if "protein" in node_keys:
             metta_edge_query_samples = self.generate_protein_edge_query_samples()
-            # print("running from inside protein")
         elif "transcript" in node_keys:
             metta_edge_query_samples = self.generate_transcripts_edge_query_samples()
-            # print("running from inside transcript")
         elif "ontology_term" in node_keys:
             metta_edge_query_samples = self.generate_gene_ontology_edge_query_samples()
-            # print("running from inside ontology term")
         elif "pathway" in node_keys:
             metta_edge_query_samples = self.generate_pathway_edge_query_samples()
-            # print("running from inside pathway")
         elif "sequence_variant" in node_keys:
             metta_edge_query_samples = self.generate_sequence_variant_edge_query_samples()
-            # print("running from inside sequence variant")
         else:
             metta_edge_query_samples = self.generate_metta_edge_query_samples()
-
-        # metta_edge_query_samples = self.generate_metta_edge_query_samples()
         
         prompt = (
             f"I have a dataset for storing biology data using a lisp style syntax."
@@ -585,7 +574,7 @@ class MettaPrompt:
             from '(gene_name (gene $ens) <some_gene_HGNC_symbol>)' expression, the value $ens will be retrived and will be passed to '(transcribed_to (gene $ens) $transcript)'.\
             The same way, from '(transcribed_to (gene $ens) $transcript)' the value of $transcript will be retrived and will be passed to '(translates_to $transcript $protein)'.\
             Again, from '(translates_to $transcript $protein)' $protien will be retrieved and will be passed to '(go_gene_product $ontology $protein)'.\
-            Finally, from '(go_gene_product $ontology $protein)', $ontology will be retrieved and will be passed to '(subontology $ontology <some_subontology_val>)'. At the end value of $ ontology will be returned."
+            Finally, from '(go_gene_product $ontology $protein)', $ontology will be retrieved and will be passed to '(subontology $ontology <some_subontology_val>)'. At the end value of $ontology will be returned."
             f"Simple queries just pattern match a single experession and then return the result. Let's look at one example\n\
                 ( \n\
                     (go_gene_product $ontology (protein <some_protein_id>)) \n\
@@ -618,5 +607,5 @@ class MettaPrompt:
             f"Return only query,  no explanation and other texts"
             f"Based on the information given to you above, you will write a pattern matching query on the dataset for the user's question."
         )
-        print(prompt)
         return prompt
+    
