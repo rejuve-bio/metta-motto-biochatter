@@ -143,11 +143,35 @@ class MettaPrompt:
         pathway_edge_query_samples = self.generate_metta_edge_query_samples()
         pathway_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on pathways \n***\n\
         \n ;Find pathways that gene <some_gene_ensembl_id> is a subset of \n\
-        (genes_pathways (gene <some_gene_ensembl_id>) $p) \n\
-        $p\n\
+        ( \n\
+            (genes_pathways (gene <some_gene_ensembl_id>) $p) \n\
+        ) \n\
+        $p \n\
+        \n ;Find pathways that gene ENSG00000000938 is a subset of \n\
+        ( \n\
+            (genes_pathways (gene ENSG00000000938) $p) \n\
+        ) \n\
+        $p \n\
+        \n ;Find pathways that gene ENSG00000177508 is a subset of \n\
+        ( \n\
+            (genes_pathways (gene ENSG00000177508) $p) \n\
+        ) \n\
+        $p \n\
         \n ;Find pathways that gene <some_gene_HGNC_symbol> is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
                 (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+                (genes_pathways (gene $ens) $p) \n\
+        )\n\
+        $p \n\
+        \n ;Find pathways that gene PPID is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+                (gene_name (gene $ens) PPID) \n\
+                (genes_pathways (gene $ens) $p) \n\
+        )\n\
+        $p \n\
+        \n ;Find pathways that gene DDX11L1 is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+                (gene_name (gene $ens) DDX11L1) \n\
                 (genes_pathways (gene $ens) $p) \n\
         )\n\
         $p \n\
@@ -157,9 +181,35 @@ class MettaPrompt:
             (parent_pathway_of $p2 $p1) \n\
         ) \n\
         $p2 \n\
-        \n ;Find parent pathways of the pathways that gene <some_gene_HGNC_symbol> is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        \n ;Find parent pathways of the pathways that gene ENSG00000000938  is a subset of.\n\
+        (, \n\
+            (genes_pathways (gene ENSG00000000938) $p1) \n\
+            (parent_pathway_of $p2 $p1) \n\
+        ) \n\
+        $p2 \n\
+        \n ;Find parent pathways of the pathways that gene ENSG00000177508  is a subset of.\n\
+        (, \n\
+            (genes_pathways (gene ENSG00000177508) $p1) \n\
+            (parent_pathway_of $p2 $p1) \n\
+        ) \n\
+        $p2 \n\
+        \n ;Find parent pathways of the pathways that gene  is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
             (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+            (genes_pathways (gene $ens) $p1) \n\
+            (parent_pathway_of $p2 $p1) \n\
+        ) \n\
+        $p2 \n\
+        \n ;Find parent pathways of the pathways that gene PPID is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) PPID) \n\
+            (genes_pathways (gene $ens) $p1) \n\
+            (parent_pathway_of $p2 $p1) \n\
+        ) \n\
+        $p2 \n\
+        \n ;Find parent pathways of the pathways that gene DDX11L1 is a subset of (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) DDX11L1) \n\
             (genes_pathways (gene $ens) $p1) \n\
             (parent_pathway_of $p2 $p1) \n\
         ) \n\
@@ -214,6 +264,13 @@ class MettaPrompt:
             (go_gene_product $ontology $protein) \n\
         ) \n\
         $ontology \n\
+        \n ;Find the  Gene Ontology (GO) categories associated with gene ENSG00000164733 \n\
+        (, \n\
+            (transcribed_to (gene ENSG00000177508) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+        ) \n\
+        $ontology \n\
         \n ;Find the Gene Ontology (GO) categories associated with gene <some_gene_HGNC_symbol> (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
             (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
@@ -221,6 +278,7 @@ class MettaPrompt:
             (translates_to $transcript $protein) \n\
             (go_gene_product $ontology $protein) \n\
         ) \n\
+        $ontology \n\
         \n ;Find the Gene Ontology (GO) categories associated with gene FLRT2 (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
             (gene_name (gene $ens) FLRT2) \n\
@@ -229,17 +287,30 @@ class MettaPrompt:
             (go_gene_product $ontology $protein) \n\
         ) \n\
         $ontology \n\
-        \n\
-        \n ;Find biological process GO categories associated with gene <some_gene_HGNC_symbol> (use the gene HGNC symbol instead of ensembl id)\n\
+        \n ;Find the Gene Ontology (GO) categories associated with gene DDX11L1 (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
-            (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+            (gene_name (gene $ens) DDX11L1) \n\
             (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find biological process GO categories associated with gene <some_gene_ensembl_id> \n\
+        (, \n\
+            (transcribed_to (gene <some_gene_ensembl_id>) $transcript) \n\
             (translates_to $transcript $protein) \n\
             (go_gene_product $ontology $protein) \n\
             (subontology $ontology biological_process) \n\
         ) \n\
         $ontology \n\
-        \n\
+         \n ;Find biological process GO categories associated with gene ENSG00000164733 \n\
+        (, \n\
+            (transcribed_to (gene ENSG00000164733) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology biological_process) \n\
+        ) \n\
+        $ontology \n\
         \n ;Find biological process Gene Ontology (GO) categories associated with gene <some_gene_HGNC_symbol> (use the gene HGNC symbol instead of ensembl id)\n\
         (, \n\
             (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
@@ -249,7 +320,15 @@ class MettaPrompt:
             (subontology $ontology biological_process) \n\
         ) \n\
         $ontology \n\
-        \n\
+        \n ;Find biological process Gene Ontology (GO) categories associated with gene DDX11L1 (use the gene HGNC symbol instead of ensembl id)\n\
+        (, \n\
+            (gene_name (gene $ens) DDX11L1) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology biological_process) \n\
+        ) \n\
+        $ontology \n\
         \n ;Find molecular function Gene Ontology (GO) categories associated with gene <some_gene_ensembl_id> \n\
         (, \n\
             (transcribed_to (gene <some_gene_ensembl_id>) $transcript) \n\
@@ -258,9 +337,26 @@ class MettaPrompt:
             (subontology $ontology molecular_function) \n\
         ) \n\
         $ontology \n\
+        \n ;Find molecular function Gene Ontology (GO) categories associated with gene ENSG00000164733 \n\
+        (, \n\
+            (transcribed_to (gene ENSG00000164733) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology molecular_function) \n\
+        ) \n\
+        $ontology \n\
         \n ;Find molecular function Gene Ontology (GO) categories associated with gene <some_gene_HGNC_symbol> (use the gene HGNC symbol instead of ensembl id) \n\
         (, \n\
             (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology molecular_function) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find molecular function Gene Ontology (GO) categories associated with gene DDX11L1 (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) DDX11L1) \n\
             (transcribed_to (gene $ens) $transcript) \n\
             (translates_to $transcript $protein) \n\
             (go_gene_product $ontology $protein) \n\
@@ -276,7 +372,24 @@ class MettaPrompt:
             (subontology $ontology cellular_component) \n\
         ) \n\
         $ontology \n\
+        \n ;Find cellular component Gene Ontology (GO) categories associated with gene DDX11L1 (use the gene HGNC symbol instead of ensembl id) \n\
+        (, \n\
+            (gene_name (gene $ens) DDX11L1) \n\
+            (transcribed_to (gene $ens) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology cellular_component) \n\
+        ) \n\
+        $ontology \n\
         \n ;Find cellular component Gene Ontology (GO) categories associated with gene <some_gene_ensembl_id> \n\
+        (, \n\
+            (transcribed_to (gene <some_gene_ensembl_id>) $transcript) \n\
+            (translates_to $transcript $protein) \n\
+            (go_gene_product $ontology $protein) \n\
+            (subontology $ontology cellular_component) \n\
+        ) \n\
+        $ontology \n\
+        \n ;Find cellular component Gene Ontology (GO) categories associated with gene ENSG00000164733 \n\
         (, \n\
             (transcribed_to (gene <some_gene_ensembl_id>) $transcript) \n\
             (translates_to $transcript $protein) \n\
@@ -353,47 +466,47 @@ class MettaPrompt:
         protein_edge_query_samples = self.generate_metta_edge_query_samples()
         protein_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on proteins \n***\n\
         \n ;Find the Gene Ontology (GO) categories associated with protein <some_protein_id> \n\
-        ( \n\
+        \n ( \n\
             go_gene_product $ontology (protein <some_protein_id>) \n\
         ) \n\
         $ontology \n\
         \n ;Find the Gene Ontology (GO) categories associated with protein P78415 \n\
-        ( \n\
+        \n ( \n\
             go_gene_product $ontology (protein P78415) \n\
         ) \n\
         $ontology \n\
         \n ;Find the Gene Ontology (GO) categories associated with protein O43155 \n\
-        ( \n\
+        \n ( \n\
             go_gene_product $ontology (protein O43155) \n\
         ) \n\
         $ontology \n\
         \n ;What are the proteins that gene <some_gene_ensembl_id> codes for \n\
-        (, \n\
+        \n (, \n\
             (transcribed_to (gene <some_gene_ensembl_id>) $transcript) \n\
             (translates_to $transcript $protein) \n\
         ) \n\
         $protein \n\
         \n ;What are the proteins that gene ENSG00000052795 codes for \n\
-        (, \n\
+        \n (, \n\
             (transcribed_to (gene ENSG00000052795) $transcript) \n\
             (translates_to $transcript $protein) \n\
         ) \n\
         $protein \n\
         \n ;What are the proteins that gene <some_gene_HGNC_symbol> codes for (use the gene HGNC symbol instead of ensembl id)\n\
-        (, \n\
+        \n (, \n\
             (gene_name (gene $ens) <some_gene_HGNC_symbol>) \n\
             (transcribed_to (gene $ens) $transcript) \n\
             (translates_to $transcript $protein) \n\
         ) \n\
         \n ;What are the proteins that gene HBA1 codes for (use the gene HGNC symbol instead of ensembl id)\n\
-        (, \n\
+        \n (, \n\
             (gene_name (gene $ens) HBA1) \n\
             (transcribed_to (gene $ens) $transcript) \n\
             (translates_to $transcript $protein) \n\
         ) \n\
         $protein \n\
         \n ;What type of evidence supports the association between the protein identified as <some_protein_id> and the Gene Ontology term <some_gene_ontology_term_id>? \n\
-        (evidence (go_gene_product (ontology_term <some_gene_ontology_term_id>) (protein <some_protein_id>)) $val) \n\
+        \n (evidence (go_gene_product (ontology_term <some_gene_ontology_term_id>) (protein <some_protein_id>)) $val) \n\
         $val \n"
         protein_edge_query_samples += "*** \n"
         return protein_edge_query_samples
@@ -474,10 +587,11 @@ class MettaPrompt:
             Again, from '(translates_to $transcript $protein)' $protien will be retrieved and will be passed to '(go_gene_product $ontology $protein)'.\
             Finally, from '(go_gene_product $ontology $protein)', $ontology will be retrieved and will be passed to '(subontology $ontology <some_subontology_val>)'. At the end value of $ ontology will be returned."
             f"Simple queries just pattern match a single experession and then return the result. Let's look at one example\n\
-                (\n\
-                    go_gene_product $ontology (protein <<some_protein_id>>)\n\
-                )\n\
-                ($ontology)\n\
+                ( \n\
+                    (go_gene_product $ontology (protein <some_protein_id>)) \n\
+                ) \n\
+                $ontology \n\
+                \n\
             The above example just pattern match the given expression and return the value of $ontology."
             f"Everything between the three hashtags (### .... ###) is the exact format of the dataset."
             f"Everything between the three asterisks (*** .... ***) is a query."
@@ -486,8 +600,10 @@ class MettaPrompt:
             f"For example, let's look at some user questions and their corresponding query.\
                 'Give the description for the ontology term with ID 'GO:0000785''.\
             for the above user question, the below query can be generated\n\
-                (description (ontology_term GO:0000785) $val)\n\
-                ($val)\n\
+                ( \n\
+                    (description (ontology_term GO:0000785) $val) \n\
+                ) \n\
+                $val\n\
             let's look at other user question that requires complex query to be genrated.\
             'Find all properties of genes that belong into biological process subontology.'\n\
             (,\n\
@@ -502,5 +618,5 @@ class MettaPrompt:
             f"Return only query,  no explanation and other texts"
             f"Based on the information given to you above, you will write a pattern matching query on the dataset for the user's question."
         )
-        # print(prompt)
+        print(prompt)
         return prompt
