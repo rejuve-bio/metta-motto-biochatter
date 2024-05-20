@@ -105,7 +105,6 @@ def get_llm_args(metta: MeTTa, prompt_space: SpaceRef, *args):
         messages += m
         functions += f
         msg_atoms += [a]
-    # print(args)
     for atom in args:
         # We first interpret the atom argument in the context of the main metta space.
         # If the prompt template is in a separate file and contains some external 
@@ -187,7 +186,6 @@ def get_llm_args(metta: MeTTa, prompt_space: SpaceRef, *args):
 def llm(metta: MeTTa, *args):
     try:
         agent, messages, functions, msgs_atom = get_llm_args(metta, None, *args)
-        print("this are messages", messages)
     except Exception as e:
         # NOTE: we put the error into the log since it can be ignored by the caller
         logger.error(e)
@@ -200,9 +198,7 @@ def llm(metta: MeTTa, *args):
         (agent, params) = agent
     if isinstance(agent, str):
         # NOTE: We could pass metta here, but it is of no use atm
-        # print("yes it is string")
         agent = MettaAgent(agent)
-        print("this is metta agent", agent)
     if not isinstance(agent, Agent):
         raise TypeError(f"Agent {agent} should be of Agent type. Got {type(agent)}")
     if not isinstance(agent, MettaAgent):
@@ -213,7 +209,6 @@ def llm(metta: MeTTa, *args):
     try:
         response = agent(msgs_atom if isinstance(agent, MettaAgent) else messages,
                         functions, **params)
-        # print(response)
     except Exception as e:
         logger.error(e)
         raise e
@@ -221,7 +216,6 @@ def llm(metta: MeTTa, *args):
         fname = response.function_call.name
         fs = S(fname)
         args = response.function_call.arguments
-        # print(fname, fs, args)
         args = {} if args is None else \
             json.loads(args) if isinstance(args, str) else args
         # Here, we check if the arguments should be parsed to MeTTa
@@ -232,8 +226,6 @@ def llm(metta: MeTTa, *args):
                 if func["parameters"]["properties"][k]['metta-type'] == 'Atom':
                     args[k] = metta.parse_single(v)
         return [E(fs, to_nested_expr(list(args.values())), msgs_atom)]
-    # print(f'this is {agent} type: {type(response.content)}')
-    # print("this is response content from llm_gate", response.content)
     return response.content if isinstance(agent, MettaAgent) else \
            [ValueAtom(response.content)]
 

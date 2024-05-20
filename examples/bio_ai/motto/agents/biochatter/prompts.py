@@ -69,7 +69,6 @@ class BioCypherPromptEngine:
                 schema_config = yaml.safe_load(f)
         elif schema_config_or_info_dict:
             schema_config = schema_config_or_info_dict
-        # print(schema_config)
 
         # check whether it is the original schema config or the output of
         # biocypher info
@@ -116,8 +115,6 @@ class BioCypherPromptEngine:
 
         self.entities['ontology_term'] = self.entities.pop("ontology term")
         
-        # print(self.entities)
-
         self.question = ""
         self.selected_entities = []
         self.selected_relationships = []  # used in property selection
@@ -368,8 +365,6 @@ class BioCypherPromptEngine:
         else:
             rels = json.dumps(self.relationships)
 
-        # print('All valid relationships: ', rels)
-
         msg = (
             "You have access to a knowledge graph that contains "
             f"these entities: {', '.join(self.selected_entities)}. "
@@ -479,10 +474,6 @@ class BioCypherPromptEngine:
                 r_props[relationship] = list(
                     self.relationships[relationship]["properties"].keys()
                 )
-
-        # print(f"Selected Entities: {entities}")
-        # print(f"Selected Relationships Full: {relationships}")
-        # print(f"Selected Relationships: {list(relationships.keys())}")
         
         metta_prompt = MettaPrompt(
             schema_nodes=self.selected_schema_nodes,
@@ -500,7 +491,7 @@ class BioCypherPromptEngine:
 
         out_msg, token_usage, correction = conversation.query(question)
 
-        print(out_msg)
+        print("Generated metta query:\n", out_msg)
 
         return out_msg.replace("`","").strip()
 

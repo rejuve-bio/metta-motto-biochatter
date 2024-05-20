@@ -56,7 +56,6 @@ class MettaPrompt:
         node_query_samples = "\nThe following are sample queries for the nodes in the dataset: \n***\n"
 
         for node_label, properties in self.schema_nodes.items():
-            print(node_label)
             node_query_samples += f"\n; Get properties of a '{node_label}' with some id <{node_label}_id>: \n\
                                         ($prop ({node_label} <{node_label}_id>) $val)\n\
                                         ($prop $val)\n"
@@ -140,17 +139,17 @@ class MettaPrompt:
         pathway_edge_query_samples = self.generate_metta_edge_query_samples()
         pathway_edge_query_samples += f"\n Below are some examples of questions and their corresponding query on pathways \n***\n\
         \n ;Find pathways that gene <some_gene_ensembl_id> is a subset of \n\
-        ( \n\
+        (, \n\
             (genes_pathways (gene <some_gene_ensembl_id>) $p) \n\
         ) \n\
         $p \n\
         \n ;Find pathways that gene ENSG00000000938 is a subset of \n\
-        ( \n\
+        (, \n\
             (genes_pathways (gene ENSG00000000938) $p) \n\
         ) \n\
         $p \n\
         \n ;Find pathways that gene ENSG00000177508 is a subset of \n\
-        ( \n\
+        (, \n\
             (genes_pathways (gene ENSG00000177508) $p) \n\
         ) \n\
         $p \n\

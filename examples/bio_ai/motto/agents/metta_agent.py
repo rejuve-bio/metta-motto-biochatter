@@ -29,7 +29,6 @@ class MettaAgent(Agent):
         # Multiple responses are now returned as a list
         for rs in response:
             for r in rs:
-                print(type(r))
                 if isinstance(r, ExpressionAtom):
                     ch = r.get_children()
                     if len(ch) == 0:
