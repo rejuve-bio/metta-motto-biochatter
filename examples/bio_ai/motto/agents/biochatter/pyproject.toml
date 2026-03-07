@@ -24,7 +24,7 @@ gTTS = { version = "^2.3.2", optional = true }
 botocore = { version = "^1.33.9", optional = true }
 xinference = { version = "^0.8.4", optional = true }
 rsa = "^4.9"
-cryptography = "^41.0.7"
+cryptography = "^46.0.5"
 neo4j-utils = "^0.0.7"
 seaborn = "^0.13.2"
 setuptools = "69.1.1"
