@@ -4,7 +4,7 @@ tiktoken
 bs4
 anthropic
 langchain==0.0.347
-nltk==3.8.1
+nltk==3.9.3
 stringcase
 frontend
 pymupdf==1.22.3
