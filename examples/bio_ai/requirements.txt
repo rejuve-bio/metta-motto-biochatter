@@ -3,7 +3,7 @@ markdown
 tiktoken
 bs4
 anthropic
-langchain==0.0.347
+langchain==0.2.5
 nltk==3.9.3
 stringcase
 frontend
